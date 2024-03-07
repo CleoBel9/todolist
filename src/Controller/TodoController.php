@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Todo;
 use App\Form\TodoType;
 use App\Repository\TodoRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\OrderBy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -89,5 +91,17 @@ class TodoController extends AbstractController
         }
 
         return $this->redirectToRoute('app_todo_index', [], Response::HTTP_SEE_OTHER);
+    }
+    #[Route('/{id}/updat-status', name: 'app_todo_update', methods: ['GET', 'POST'])]
+    public function update(Request $request, Todo $todo, EntityManagerInterface $entityManager): Response
+    {
+        return $this->json(["message"=>"succes"]);
+        //fait l'update 
+        update(Todo $todo, EntityManagerInterface $em) {
+            $todo->setDone(true);
+            $em->persist($todo);
+            $em->flush();
+            return $this->json(['data'=>$todo]);
+        }
     }
 }
