@@ -6,7 +6,9 @@ use App\Entity\Todo;
 use App\Form\TodoType;
 use App\Repository\TodoRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\OrderBy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,10 +17,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class TodoController extends AbstractController
 {
     #[Route('/', name: 'app_todo_index', methods: ['GET'])]
-    public function index(TodoRepository $todoRepository): Response
+    public function index(TodoRepository $todoRepository, Request $request): Response
     {
+        $orderby = $request->query->get('orderBy') ?? 'id';
+        $order = $request->query->get('order') ?? 'ASC';
+        $n = $order == "ASC" ? 'DESC' : 'ASC';
+
+        $form = $this->createForm(FormType::class);
+        $form->handleRequest($request);
+
         return $this->render('todo/index.html.twig', [
-            'todos' => $todoRepository->findAll(),
+            'todos' => $todoRepository->findAllOrdered($order, $orderby),
+            'order' => $n, //requete sql pour l'affichage 
+            'form' => $form->createView(),
         ]);
     }
 
@@ -27,7 +38,7 @@ class TodoController extends AbstractController
     {
         $todo = new Todo();
         $form = $this->createForm(TodoType::class, $todo);
-        $form->handleRequest($request);
+        //$form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($todo);
@@ -45,6 +56,7 @@ class TodoController extends AbstractController
     #[Route('/{id}', name: 'app_todo_show', methods: ['GET'])]
     public function show(Todo $todo): Response
     {
+        dump($todo);
         return $this->render('todo/show.html.twig', [
             'todo' => $todo,
         ]);

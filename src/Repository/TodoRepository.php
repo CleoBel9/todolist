@@ -21,6 +21,14 @@ class TodoRepository extends ServiceEntityRepository
         parent::__construct($registry, Todo::class);
     }
 
+    public function findAllOrdered($order, $orderBy){
+        $qb = $this->createQueryBuilder('t')
+        ->orderBy('t.'.$orderBy, $order)
+        ->getQuery()
+        ->getResult();
+        return $qb;
+    }
+
 //    /**
 //     * @return Todo[] Returns an array of Todo objects
 //     */

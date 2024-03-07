@@ -5,13 +5,16 @@
 {% block body %}
     <h1>Todo index</h1>
 
+ <button class="btn">{{ button_label|default('Filtrer') }}</button>
+ {{ form_end(form ) }}
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>actions</th>
+                <th><a href='/todo?order={{order}}'>Id</a></th>
+                <th><a href='/todo?order={{order}}'>Name</a></th>
+                <th><a href='/todo?order={{order}}'>Description</a></th>
+                <th><a href='/todo?order={{order}}'>Etat</a></th>
+                <th><a href='/todo?order={{order}}'>Actions</a></th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +23,12 @@
                 <td>{{ todo.id }}</td>
                 <td>{{ todo.name }}</td>
                 <td>{{ todo.Description }}</td>
+                {% if todo.done == 1 %}
+                <td>Fait</td>
+                {% else %}
+                <td>A Faire</td>
+                {% endif %}
+                
                 <td>
                     <a href="{{ path('app_todo_show', {'id': todo.id}) }}">show</a>
                     <a href="{{ path('app_todo_edit', {'id': todo.id}) }}">edit</a>
